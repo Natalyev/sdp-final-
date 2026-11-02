@@ -1,0 +1,38 @@
+@startuml
+title Ticket Reservation System — current stage
+interface Ticket
+class ConcertTicket
+class FlightTicket
+Ticket <|.. ConcertTicket
+Ticket <|.. FlightTicket
+
+interface TicketFactory
+class ConcertTicketFactory
+class FlightTicketFactory
+TicketFactory <|.. ConcertTicketFactory
+TicketFactory <|.. FlightTicketFactory
+TicketFactory ..> Ticket : creates
+
+interface SeatSelectionStrategy
+class FrontRowStrategy
+class BackRowStrategy
+SeatSelectionStrategy <|.. FrontRowStrategy
+SeatSelectionStrategy <|.. BackRowStrategy
+class SeatInventory
+SeatInventory o-- SeatSelectionStrategy
+
+interface Observer
+interface Subject
+class TicketEventPublisher
+class CustomerNotifier
+class AvailabilityBoard
+Subject <|.. TicketEventPublisher
+Observer <|.. CustomerNotifier
+Observer <|.. AvailabilityBoard
+TicketEventPublisher o-- Observer : notifies
+
+class ReservationService
+ReservationService o-- TicketFactory
+ReservationService o-- SeatInventory
+ReservationService o-- Subject
+@enduml
