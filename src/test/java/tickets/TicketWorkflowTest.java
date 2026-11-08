@@ -2,10 +2,15 @@ package tickets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import tickets.builder.EventConfiguration;
+import tickets.cli.ConsoleApp;
 import tickets.facade.TicketReservationSystem;
 import tickets.factory.ConcertTicketFactory;
 import tickets.factory.FlightTicketFactory;
@@ -14,6 +19,9 @@ import tickets.model.FlightTicket;
 import tickets.observer.AvailabilityBoard;
 import tickets.observer.CustomerNotifier;
 import tickets.observer.TicketEvent;
+import tickets.observer.TicketEventPublisher;
+import tickets.service.ReservationService;
+import tickets.service.SeatInventory;
 import tickets.state.Reservation;
 import tickets.state.ReservationStatus;
 import tickets.strategy.BackRowStrategy;
@@ -93,5 +101,37 @@ class TicketWorkflowTest {
         assertThrows(IllegalArgumentException.class, () -> system.book("UNKNOWN", "C1"));
         assertThrows(IllegalArgumentException.class, () -> system.confirm("UNKNOWN"));
         assertThrows(IllegalArgumentException.class, () -> system.book("SHOW", " "));
+    }
+
+    @Test void consoleRunsCompleteBookingFlow() {
+        TicketReservationSystem system = new TicketReservationSystem();
+        system.register(concert("SHOW", Set.of(1, 2)));
+        String commands = "events\nbook SHOW C1\nconfirm R-1\ncancel R-1\nevents\nquit\n";
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        new ConsoleApp(system, new ByteArrayInputStream(commands.getBytes(StandardCharsets.UTF_8)),
+                new PrintStream(bytes, true, StandardCharsets.UTF_8)).run();
+        String output = bytes.toString(StandardCharsets.UTF_8);
+        assertTrue(output.contains("R-1 PENDING"));
+        assertTrue(output.contains("R-1 CONFIRMED"));
+        assertTrue(output.contains("R-1 CANCELLED"));
+        assertTrue(output.contains("SHOW: 2 seats available"));
+        assertTrue(output.contains("EVENT SEAT_AVAILABILITY_CHANGED"));
+    }
+
+    @Test void failedTicketCreationReleasesSelectedSeat() {
+        SeatInventory inventory = new SeatInventory(Set.of(1), new FrontRowStrategy());
+        ReservationService service = new ReservationService((id, seat, price) -> {
+            throw new IllegalStateException("Ticket creation failed");
+        }, inventory, new TicketEventPublisher(), BigDecimal.TEN);
+        assertThrows(IllegalStateException.class, () -> service.reserve("SHOW"));
+        assertEquals(1, inventory.remaining());
+    }
+
+    @Test void availabilityBoardKeepsCountsForEachEvent() {
+        AvailabilityBoard board = new AvailabilityBoard();
+        board.onEvent(new TicketEvent(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, "SHOW", 2, BigDecimal.TEN));
+        board.onEvent(new TicketEvent(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, "FLIGHT", 5, BigDecimal.TEN));
+        assertEquals(2, board.seatsRemaining("SHOW"));
+        assertEquals(5, board.seatsRemaining("FLIGHT"));
     }
 }

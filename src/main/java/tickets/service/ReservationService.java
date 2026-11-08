@@ -23,7 +23,13 @@ public final class ReservationService {
     public synchronized Ticket reserve(String eventId) {
         if (eventId == null || eventId.isBlank()) throw new IllegalArgumentException("Event ID is required");
         int seat = inventory.reserveSeat();
-        Ticket ticket = factory.create(eventId, seat, price);
+        Ticket ticket;
+        try {
+            ticket = factory.create(eventId, seat, price);
+        } catch (RuntimeException failure) {
+            inventory.releaseSeat(seat);
+            throw failure;
+        }
         events.publish(new TicketEvent(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, eventId, inventory.remaining(), price));
         return ticket;
     }
