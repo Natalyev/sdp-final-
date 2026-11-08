@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import tickets.builder.EventConfiguration;
 import tickets.observer.Observer;
 import tickets.observer.TicketEvent;
 import tickets.observer.TicketEventPublisher;
+import tickets.model.Ticket;
 import tickets.service.ReservationService;
 import tickets.service.SeatInventory;
 import tickets.state.Reservation;
@@ -34,7 +36,8 @@ public final class TicketReservationSystem {
     public synchronized Reservation book(String eventId, String customerId) {
         if (customerId == null || customerId.isBlank()) throw new IllegalArgumentException("Customer ID is required");
         ReservationService service = context(eventId).service();
-        ReservationSession session = new ReservationSession("R-" + nextReservationId++, customerId, service.reserve(eventId));
+        Ticket ticket = service.reserve(eventId);
+        ReservationSession session = new ReservationSession("R-" + nextReservationId++, customerId, ticket);
         Reservation reservation = session.snapshot();
         reservations.put(reservation.id(), session);
         return reservation;
@@ -59,6 +62,7 @@ public final class TicketReservationSystem {
     }
 
     public synchronized int remaining(String eventId) { return context(eventId).inventory().remaining(); }
+    public synchronized Set<String> eventIds() { return Set.copyOf(eventContexts.keySet()); }
     public synchronized void changePrice(String eventId, BigDecimal price) { context(eventId).service().changePrice(eventId, price); }
     public synchronized void setStrategy(String eventId, SeatSelectionStrategy strategy) { context(eventId).inventory().setStrategy(strategy); }
     public void subscribe(TicketEvent.Type type, Observer observer) { events.subscribe(type, observer); }

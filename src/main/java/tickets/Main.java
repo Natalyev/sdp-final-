@@ -3,6 +3,7 @@ package tickets;
 import java.math.BigDecimal;
 import java.util.Set;
 import tickets.builder.EventConfiguration;
+import tickets.cli.ConsoleApp;
 import tickets.facade.TicketReservationSystem;
 import tickets.factory.ConcertTicketFactory;
 import tickets.factory.FlightTicketFactory;
@@ -28,6 +29,11 @@ public final class Main {
         system.register(new EventConfiguration.Builder("FLIGHT-1")
                 .factory(new FlightTicketFactory()).strategy(new BackRowStrategy())
                 .seats(Set.of(10, 11)).price(new BigDecimal("200.00")).build());
+
+        if (args.length > 0 && args[0].equals("--interactive")) {
+            new ConsoleApp(system, System.in, System.out).run();
+            return;
+        }
 
         Reservation first = system.book("CONCERT-1", "CUSTOMER-1");
         System.out.println("Booked concert seat: " + first.ticket().seat() + " (" + first.status() + ")");
