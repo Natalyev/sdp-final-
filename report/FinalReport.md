@@ -32,7 +32,7 @@ The editable UML diagram is `docs/class-diagram.puml`. The `Main` class demonstr
 | Observer | `Subject`, `Observer`, `TicketEventPublisher`, `CustomerNotifier`, `AvailabilityBoard` | The service publishes seat-availability and price events. Subscribers receive only the types they requested. The availability board stores counts by event ID. |
 | Builder | `EventConfiguration.Builder` | The client assembles ticket factory, seating policy, seat numbers, and price. `build()` rejects incomplete or invalid configurations. The facade accepts only a complete configuration. |
 | State | `ReservationState`, `PendingState`, `ConfirmedState`, `CancelledState`, `ReservationSession` | Pending can be confirmed or cancelled. Confirmed can remain confirmed or be cancelled. Cancelled rejects further transitions. The facade returns immutable snapshots so callers cannot bypass seat release. |
-| Facade | `TicketReservationSystem` | Provides one API for registration, booking, confirmation, cancellation, price and policy changes, and subscriptions. It coordinates the other five patterns. |
+| Facade | `TicketReservationSystem` | Provides one API for registration, booking, confirmation, cancellation, price and policy changes, subscriptions, and a customer's reservation history. It coordinates the other five patterns. |
 
 The six patterns form one chain: **Builder -> Facade -> Strategy -> Factory Method -> State**, with **Observer** notifying clients after seat and price changes.
 
@@ -63,7 +63,7 @@ system.confirm(booking.id());
 
 ## 6. Verification and evidence
 
-Run `mvn clean test`: **18 tests pass, 0 failures, 0 errors**. Ten tests check factories, seat strategies, Observer subscriptions, and basic service integration. Eight workflow tests check Builder validation, all-pattern integration, cancellation and seat reuse, independent event inventories, invalid IDs, interactive commands, ticket-creation rollback, and per-event availability counts.
+Run `mvn clean test`: **19 tests pass, 0 failures, 0 errors**. Ten tests check factories, seat strategies, Observer subscriptions, and basic service integration. Eight workflow tests check Builder validation, all-pattern integration, cancellation and seat reuse, independent event inventories, invalid IDs, interactive commands, ticket-creation rollback, and per-event availability counts. One Facade test checks customer reservation lookup.
 
 Run `tickets.Main` to see the deterministic demo. Run `tickets.Main --interactive` to enter commands. Verified terminal transcripts are included in `evidence/test-run.txt`, `evidence/demo-run.txt`, and `evidence/interactive-run.txt`.
 
@@ -94,7 +94,7 @@ The repository records contributions under the GitHub handles **Natalyev**, **es
 
 ## 11. Conclusion
 
-The working prototype demonstrates the requested Ticket Reservation System topic. Six patterns participate in the same booking workflow: event setup, seat selection, ticket creation, reservation state changes, and notifications. The Maven build succeeds and all 18 tests pass.
+The working prototype demonstrates the requested Ticket Reservation System topic. Six patterns participate in the same booking workflow: event setup, seat selection, ticket creation, reservation state changes, and notifications. The Maven build succeeds and all 19 tests pass.
 
 ## 12. Further work
 

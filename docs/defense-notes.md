@@ -8,7 +8,7 @@ Our project is a ticket reservation system for concerts and flights. We use six 
 
 1. Run `tickets.Main`. Point out the first concert booking in `PENDING`, its confirmation, the switch from front-row to back-row, cancellation, and the flight ticket.
 2. Run `tickets.Main --interactive`. Enter `events`, `book CONCERT-1 C1`, `confirm R-1`, `cancel R-1`, `events`, `quit`.
-3. Run `mvn clean test`. Show `Tests run: 18, Failures: 0, Errors: 0`.
+3. Run `mvn clean test`. Show `Tests run: 19, Failures: 0, Errors: 0`.
 
 ## Files to show
 

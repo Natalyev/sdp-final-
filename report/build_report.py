@@ -232,7 +232,7 @@ pattern_rows = [
     ("Observer", "TicketEventPublisher; notifier; board", "Subscribed views receive seat-count or price events without service-to-view coupling."),
     ("Builder", "EventConfiguration.Builder", "A complete configuration is validated before an event is registered."),
     ("State", "PendingState; ConfirmedState; CancelledState", "The current state decides whether confirmation or cancellation is allowed."),
-    ("Facade", "TicketReservationSystem", "A single API coordinates event setup, booking, lifecycle, pricing, and subscriptions."),
+    ("Facade", "TicketReservationSystem", "A single API coordinates setup, booking, lifecycle, pricing, subscriptions, and customer history."),
 ]
 story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 215)),
           section(6, "Java code example"),
@@ -251,12 +251,12 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
           bullet("If ticket creation fails, the selected seat is returned before the error is propagated."),
           bullet("Synchronous Observer delivery and CopyOnWriteArrayList allow subscription changes during notification."),
           section(8, "Verification"),
-          para("<b>18 tests passed · 0 failures · 0 errors.</b> Ten tests cover the initial patterns and service "
+          para("<b>19 tests passed · 0 failures · 0 errors.</b> Ten tests cover the initial patterns and service "
                "integration. Eight workflow tests cover all-pattern integration, Builder validation, "
                "state transitions, seat reuse, independent events, interactive commands, rollback, and "
-               "per-event availability counts."),
+               "per-event availability counts. One Facade test covers customer reservation lookup."),
           para("Actual terminal run evidence is provided in the three text files under <font name='Courier'>evidence/</font>."),
-          Preformatted("Tests run: 18, Failures: 0, Errors: 0, Skipped: 0\nBUILD SUCCESS", code_style),
+          Preformatted("Tests run: 19, Failures: 0, Errors: 0, Skipped: 0\nBUILD SUCCESS", code_style),
           section(9, "How to run"),
           Preformatted("mvn clean test\nmvn exec:java\nmvn package\njava -cp target/classes tickets.Main --interactive", code_style),
           para("Interactive commands: <font name='Courier'>help</font>, <font name='Courier'>events</font>, "
@@ -289,7 +289,7 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
           section(12, "Conclusion"),
           para("The prototype demonstrates the requested Ticket Reservation System topic. Six patterns "
                "cooperate in event setup, seat selection, ticket creation, reservation transitions, and "
-               "notifications. The Maven build succeeds and all 18 tests pass."),
+               "notifications. The Maven build succeeds and all 19 tests pass."),
           section(13, "Further work"),
           para("Persistent storage, payment processing, multi-seat orders, authentication, and a graphical "
                "seat map would extend the prototype for broader use."),

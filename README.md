@@ -60,4 +60,4 @@ Reservation confirmed = system.confirm(pending.id());
 
 ## Verification
 
-Eighteen JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, independent event inventories, interactive commands, and recovery from ticket-creation failure. `mvn clean test` passes. The project is intentionally in-memory; it does not include payments or persistent storage.
+Nineteen JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, independent event inventories, interactive commands, customer reservation lookup, and recovery from ticket-creation failure. `mvn clean test` passes. The project is intentionally in-memory; it does not include payments or persistent storage.

@@ -2,6 +2,8 @@ package tickets.facade;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +23,7 @@ public final class TicketReservationSystem {
 
     private final TicketEventPublisher events = new TicketEventPublisher();
     private final Map<String, EventContext> eventContexts = new HashMap<>();
-    private final Map<String, ReservationSession> reservations = new HashMap<>();
+    private final Map<String, ReservationSession> reservations = new LinkedHashMap<>();
     private long nextReservationId = 1;
 
     public synchronized void register(EventConfiguration configuration) {
@@ -59,6 +61,15 @@ public final class TicketReservationSystem {
 
     public synchronized Reservation reservation(String reservationId) {
         return session(reservationId).snapshot();
+    }
+
+    public synchronized List<Reservation> reservationsForCustomer(String customerId) {
+        if (customerId == null || customerId.isBlank())
+            throw new IllegalArgumentException("Customer ID is required");
+        return reservations.values().stream()
+                .map(ReservationSession::snapshot)
+                .filter(reservation -> reservation.customerId().equals(customerId))
+                .toList();
     }
 
     public synchronized int remaining(String eventId) { return context(eventId).inventory().remaining(); }
