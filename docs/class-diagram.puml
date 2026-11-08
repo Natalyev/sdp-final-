@@ -1,38 +1,80 @@
 @startuml
-title Ticket Reservation System — current stage
-interface Ticket
-class ConcertTicket
-class FlightTicket
-Ticket <|.. ConcertTicket
-Ticket <|.. FlightTicket
+title Ticket Reservation System - six integrated patterns
+skinparam classAttributeIconSize 0
 
-interface TicketFactory
-class ConcertTicketFactory
-class FlightTicketFactory
-TicketFactory <|.. ConcertTicketFactory
-TicketFactory <|.. FlightTicketFactory
-TicketFactory ..> Ticket : creates
+package model {
+  interface Ticket
+  class ConcertTicket
+  class FlightTicket
+  Ticket <|.. ConcertTicket
+  Ticket <|.. FlightTicket
+}
 
-interface SeatSelectionStrategy
-class FrontRowStrategy
-class BackRowStrategy
-SeatSelectionStrategy <|.. FrontRowStrategy
-SeatSelectionStrategy <|.. BackRowStrategy
-class SeatInventory
-SeatInventory o-- SeatSelectionStrategy
+package factory {
+  interface TicketFactory
+  class ConcertTicketFactory
+  class FlightTicketFactory
+  TicketFactory <|.. ConcertTicketFactory
+  TicketFactory <|.. FlightTicketFactory
+  TicketFactory ..> Ticket : creates
+}
 
-interface Observer
-interface Subject
-class TicketEventPublisher
-class CustomerNotifier
-class AvailabilityBoard
-Subject <|.. TicketEventPublisher
-Observer <|.. CustomerNotifier
-Observer <|.. AvailabilityBoard
-TicketEventPublisher o-- Observer : notifies
+package strategy {
+  interface SeatSelectionStrategy
+  class FrontRowStrategy
+  class BackRowStrategy
+  SeatSelectionStrategy <|.. FrontRowStrategy
+  SeatSelectionStrategy <|.. BackRowStrategy
+}
 
-class ReservationService
-ReservationService o-- TicketFactory
-ReservationService o-- SeatInventory
-ReservationService o-- Subject
+package observer {
+  interface Observer
+  interface Subject
+  class TicketEventPublisher
+  class CustomerNotifier
+  class AvailabilityBoard
+  Subject <|.. TicketEventPublisher
+  Observer <|.. CustomerNotifier
+  Observer <|.. AvailabilityBoard
+  TicketEventPublisher o-- Observer : notifies
+}
+
+package builder {
+  class EventConfiguration
+  class "EventConfiguration.Builder" as EventBuilder
+  EventBuilder ..> EventConfiguration : builds
+  EventConfiguration o-- TicketFactory
+  EventConfiguration o-- SeatSelectionStrategy
+}
+
+package state {
+  interface ReservationState
+  class PendingState
+  class ConfirmedState
+  class CancelledState
+  class ReservationSession
+  class Reservation
+  ReservationState <|.. PendingState
+  ReservationState <|.. ConfirmedState
+  ReservationState <|.. CancelledState
+  ReservationSession o-- ReservationState
+  ReservationSession ..> Reservation : snapshot
+}
+
+package service {
+  class SeatInventory
+  class ReservationService
+  SeatInventory o-- SeatSelectionStrategy
+  ReservationService o-- SeatInventory
+  ReservationService o-- TicketFactory
+  ReservationService o-- Subject
+}
+
+package facade {
+  class TicketReservationSystem
+  TicketReservationSystem o-- ReservationService
+  TicketReservationSystem o-- ReservationSession
+  TicketReservationSystem o-- TicketEventPublisher
+  TicketReservationSystem ..> EventConfiguration : register
+}
 @enduml
