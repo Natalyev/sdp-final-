@@ -2,37 +2,47 @@ package tickets;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import tickets.builder.EventConfiguration;
+import tickets.facade.TicketReservationSystem;
 import tickets.factory.ConcertTicketFactory;
 import tickets.factory.FlightTicketFactory;
 import tickets.observer.AvailabilityBoard;
 import tickets.observer.CustomerNotifier;
 import tickets.observer.TicketEvent;
-import tickets.observer.TicketEventPublisher;
-import tickets.service.ReservationService;
-import tickets.service.SeatInventory;
+import tickets.state.Reservation;
 import tickets.strategy.BackRowStrategy;
 import tickets.strategy.FrontRowStrategy;
 
 public final class Main {
     public static void main(String[] args) {
-        TicketEventPublisher events = new TicketEventPublisher();
+        TicketReservationSystem system = new TicketReservationSystem();
         CustomerNotifier customer = new CustomerNotifier();
         AvailabilityBoard board = new AvailabilityBoard();
-        events.subscribe(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, customer);
-        events.subscribe(TicketEvent.Type.PRICE_CHANGED, customer);
-        events.subscribe(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, board);
+        system.subscribe(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, customer);
+        system.subscribe(TicketEvent.Type.PRICE_CHANGED, customer);
+        system.subscribe(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED, board);
 
-        SeatInventory concertSeats = new SeatInventory(Set.of(1, 2, 3), new FrontRowStrategy());
-        ReservationService concert = new ReservationService(new ConcertTicketFactory(), concertSeats, events, new BigDecimal("50.00"));
-        System.out.println("Factory + front-row strategy: " + concert.reserve("CONCERT-1"));
-        concertSeats.setStrategy(new BackRowStrategy());
-        System.out.println("Switched to back-row strategy: " + concert.reserve("CONCERT-1"));
-        concert.changePrice("CONCERT-1", new BigDecimal("60.00"));
+        system.register(new EventConfiguration.Builder("CONCERT-1")
+                .factory(new ConcertTicketFactory()).strategy(new FrontRowStrategy())
+                .seats(Set.of(1, 2, 3)).price(new BigDecimal("50.00")).build());
+        system.register(new EventConfiguration.Builder("FLIGHT-1")
+                .factory(new FlightTicketFactory()).strategy(new BackRowStrategy())
+                .seats(Set.of(10, 11)).price(new BigDecimal("200.00")).build());
 
-        ReservationService flight = new ReservationService(new FlightTicketFactory(),
-                new SeatInventory(Set.of(10, 11), new BackRowStrategy()), events, new BigDecimal("200.00"));
-        System.out.println("Flight factory: " + flight.reserve("FLIGHT-1"));
-        System.out.println("Observer: customer received " + customer.received().size() + " events");
-        System.out.println("Observer: last availability update has " + board.seatsRemaining() + " seat left");
+        Reservation first = system.book("CONCERT-1", "CUSTOMER-1");
+        System.out.println("Booked concert seat: " + first.ticket().seat() + " (" + first.status() + ")");
+        Reservation confirmed = system.confirm(first.id());
+        System.out.println("Confirmed reservation: " + confirmed.id() + " (" + confirmed.status() + ")");
+        system.setStrategy("CONCERT-1", new BackRowStrategy());
+        Reservation second = system.book("CONCERT-1", "CUSTOMER-2");
+        System.out.println("After strategy switch, seat: " + second.ticket().seat());
+        system.cancel(second.id());
+        System.out.println("Cancelled reservation; concert seats available: " + system.remaining("CONCERT-1"));
+        system.changePrice("CONCERT-1", new BigDecimal("60.00"));
+
+        Reservation flight = system.book("FLIGHT-1", "CUSTOMER-3");
+        System.out.println("Flight ticket: " + flight.ticket());
+        System.out.println("Customer received events: " + customer.received().size());
+        System.out.println("Last availability update: " + board.seatsRemaining() + " seat left");
     }
 }

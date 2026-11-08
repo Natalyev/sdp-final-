@@ -34,6 +34,13 @@ public final class ReservationService {
         events.publish(new TicketEvent(TicketEvent.Type.PRICE_CHANGED, eventId, inventory.remaining(), price));
     }
 
+    public synchronized void release(Ticket ticket) {
+        Objects.requireNonNull(ticket);
+        inventory.releaseSeat(ticket.seat());
+        events.publish(new TicketEvent(TicketEvent.Type.SEAT_AVAILABILITY_CHANGED,
+                ticket.eventId(), inventory.remaining(), price));
+    }
+
     private static BigDecimal validPrice(BigDecimal value) {
         Objects.requireNonNull(value);
         if (value.signum() < 0) throw new IllegalArgumentException("Price cannot be negative");
