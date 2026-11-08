@@ -1,0 +1,11 @@
+Ticket Reservation System. Type 'help' for commands.
+> CONCERT-1: 3 seats available
+FLIGHT-1: 2 seats available
+> EVENT SEAT_AVAILABILITY_CHANGED CONCERT-1 seats=2 price=50.00
+R-1 PENDING ConcertTicket[eventId=CONCERT-1, seat=1, price=50.00]
+> R-1 CONFIRMED ConcertTicket[eventId=CONCERT-1, seat=1, price=50.00]
+> EVENT SEAT_AVAILABILITY_CHANGED CONCERT-1 seats=3 price=50.00
+R-1 CANCELLED ConcertTicket[eventId=CONCERT-1, seat=1, price=50.00]
+> CONCERT-1: 3 seats available
+FLIGHT-1: 2 seats available
+> Goodbye.

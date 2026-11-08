@@ -1,6 +1,6 @@
 # Ticket Reservation System
 
-Java 17 command-line demonstration of a ticket reservation workflow. The current version integrates six design patterns and is intended as an approximately 80–90% stage of the final project. It supports concert and flight events, booking, confirmation, cancellation, price changes, seat-policy changes, and customer notifications.
+Java 17 ticket reservation application integrating six design patterns. It supports concert and flight events, booking, confirmation, cancellation, price changes, seat-policy changes, and customer notifications.
 
 ## Run
 
@@ -12,6 +12,8 @@ mvn exec:java
 ```
 
 The demo books and confirms a concert seat, switches the seat-selection policy, books and cancels another seat, changes the concert price, and books a flight seat.
+
+For an interactive terminal session, run `java -cp target/classes tickets.Main --interactive` after `mvn package`. Available commands: `help`, `events`, `book EVENT CUSTOMER`, `confirm ID`, `cancel ID`, `show ID`, `price EVENT AMOUNT`, `strategy EVENT front|back`, and `quit`. The sample events are `CONCERT-1` and `FLIGHT-1`.
 
 ## Six integrated patterns
 
@@ -45,14 +47,17 @@ Reservation confirmed = system.confirm(pending.id());
 ## Project files
 
 - `src/main/java/tickets/Main.java`: runnable demonstration.
+- `src/main/java/tickets/cli/ConsoleApp.java`: interactive terminal interface.
 - `src/main/java/tickets/facade`: public workflow API.
 - `src/main/java/tickets/builder`: validated event setup.
 - `src/main/java/tickets/state`: reservation lifecycle.
 - `src/main/java/tickets/factory`, `strategy`, `observer`, `service`, `model`: core behavior.
 - `src/test/java/tickets`: unit and integration tests.
 - `docs/class-diagram.puml`: editable UML diagram.
-- `report/FinalReport.md`: draft defense report and remaining submission work.
+- `report/FinalReport.md`: editable report source.
+- `output/pdf/FinalReport.pdf`: ready-to-read report.
+- `docs/defense-notes.md`: short defense guide.
 
-## Current verification and remaining work
+## Verification
 
-Fifteen JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, and independent event inventories. `mvn test` passes. Before final submission, the team still needs to produce the required PDF report, screenshots, source ZIP, and presentation material, then review the final rubric and team contribution details.
+Eighteen JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, independent event inventories, interactive commands, and recovery from ticket-creation failure. `mvn clean test` passes. The project is intentionally in-memory; it does not include payments or persistent storage.

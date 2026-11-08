@@ -1,0 +1,7 @@
+Booked concert seat: 1 (PENDING)
+Confirmed reservation: R-1 (CONFIRMED)
+After strategy switch, seat: 3
+Cancelled reservation; concert seats available: 2
+Flight ticket: FlightTicket[eventId=FLIGHT-1, seat=11, price=200.00]
+Customer received events: 5
+Last availability update: 1 seat left
