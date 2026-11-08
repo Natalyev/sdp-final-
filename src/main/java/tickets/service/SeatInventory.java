@@ -6,12 +6,14 @@ import java.util.Set;
 import tickets.strategy.SeatSelectionStrategy;
 
 public final class SeatInventory {
+    private final Set<Integer> allSeats;
     private final Set<Integer> availableSeats;
     private SeatSelectionStrategy strategy;
 
     public SeatInventory(Set<Integer> seats, SeatSelectionStrategy strategy) {
         if (seats == null || seats.isEmpty() || seats.stream().anyMatch(n -> n == null || n < 1))
             throw new IllegalArgumentException("Seats must be positive and nonempty");
+        this.allSeats = Set.copyOf(seats);
         this.availableSeats = new HashSet<>(seats);
         setStrategy(strategy);
     }
@@ -27,4 +29,9 @@ public final class SeatInventory {
     }
 
     public synchronized int remaining() { return availableSeats.size(); }
+
+    public synchronized void releaseSeat(int seat) {
+        if (!allSeats.contains(seat) || !availableSeats.add(seat))
+            throw new IllegalStateException("Seat is not reserved: " + seat);
+    }
 }
