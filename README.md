@@ -1,10 +1,19 @@
 # Ticket Reservation System
 
-Java 17 ticket reservation application integrating six design patterns. It supports concert and flight events, booking, confirmation, cancellation, price changes, seat-policy changes, and customer notifications.
+Java 17 ticket reservation application integrating six design patterns. It supports concert and flight events, booking, confirmation, cancellation, price changes, seat-policy changes, and customer notifications. A responsive browser interface is available for live demonstrations.
 
 ## Run
 
-Open this folder as a Maven project in VS Code. Run `tickets.Main` for the demo and the two test classes from the Testing panel. With Maven installed:
+Open this folder as a Maven project in VS Code. Run `tickets.Main` for the original console demo. For the browser interface, run:
+
+```text
+mvn package
+java -cp target/classes tickets.Main --web
+```
+
+Open `http://127.0.0.1:8080` in a browser. The server listens only on your computer. To use a different port, add it after `--web`, for example `--web 8090`. Stop the server with Ctrl+C. The browser demo starts with 30 concert seats and 18 flight seats. You can book, confirm or cancel reservations, switch the seating policy, update prices, and watch the seat map and notifications change immediately. Data resets when the server restarts.
+
+To run the original console demo and tests:
 
 ```text
 mvn test
@@ -48,6 +57,8 @@ Reservation confirmed = system.confirm(pending.id());
 
 - `src/main/java/tickets/Main.java`: runnable demonstration.
 - `src/main/java/tickets/cli/ConsoleApp.java`: interactive terminal interface.
+- `src/main/java/tickets/web/WebApp.java`: local HTTP server and browser API.
+- `src/main/resources/web`: responsive browser interface.
 - `src/main/java/tickets/facade`: public workflow API.
 - `src/main/java/tickets/builder`: validated event setup.
 - `src/main/java/tickets/state`: reservation lifecycle.
@@ -60,4 +71,4 @@ Reservation confirmed = system.confirm(pending.id());
 
 ## Verification
 
-Nineteen JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, independent event inventories, interactive commands, customer reservation lookup, and recovery from ticket-creation failure. `mvn clean test` passes. The project is intentionally in-memory; it does not include payments or persistent storage.
+Twenty JUnit tests cover factories, seat strategies, subscriptions, booking flow, state transitions, cancellation, independent event inventories, interactive commands, customer reservation lookup, browser API integration, and recovery from ticket-creation failure. `mvn clean test` passes. The project is intentionally in-memory; it does not include payments or persistent storage.

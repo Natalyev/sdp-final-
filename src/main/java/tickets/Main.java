@@ -2,6 +2,8 @@ package tickets;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import tickets.builder.EventConfiguration;
 import tickets.cli.ConsoleApp;
 import tickets.facade.TicketReservationSystem;
@@ -13,9 +15,11 @@ import tickets.observer.TicketEvent;
 import tickets.state.Reservation;
 import tickets.strategy.BackRowStrategy;
 import tickets.strategy.FrontRowStrategy;
+import tickets.web.WebApp;
 
 public final class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        boolean webMode = args.length > 0 && args[0].equals("--web");
         TicketReservationSystem system = new TicketReservationSystem();
         CustomerNotifier customer = new CustomerNotifier();
         AvailabilityBoard board = new AvailabilityBoard();
@@ -25,10 +29,24 @@ public final class Main {
 
         system.register(new EventConfiguration.Builder("CONCERT-1")
                 .factory(new ConcertTicketFactory()).strategy(new FrontRowStrategy())
-                .seats(Set.of(1, 2, 3)).price(new BigDecimal("50.00")).build());
+                .seats(webMode ? IntStream.rangeClosed(1, 30).boxed().collect(Collectors.toSet())
+                        : Set.of(1, 2, 3))
+                .price(new BigDecimal("50.00")).build());
         system.register(new EventConfiguration.Builder("FLIGHT-1")
                 .factory(new FlightTicketFactory()).strategy(new BackRowStrategy())
-                .seats(Set.of(10, 11)).price(new BigDecimal("200.00")).build());
+                .seats(webMode ? IntStream.rangeClosed(10, 27).boxed().collect(Collectors.toSet())
+                        : Set.of(10, 11))
+                .price(new BigDecimal("200.00")).build());
+
+        if (webMode) {
+            int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
+            try (WebApp web = WebApp.start(system, port)) {
+                System.out.println("Ticket Reservation System: http://127.0.0.1:" + web.port());
+                System.out.println("Press Ctrl+C to stop the server.");
+                new java.util.concurrent.CountDownLatch(1).await();
+            }
+            return;
+        }
 
         if (args.length > 0 && args[0].equals("--interactive")) {
             new ConsoleApp(system, System.in, System.out).run();

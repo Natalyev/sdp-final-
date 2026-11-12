@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ticket Reservation System</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="container" id="top">
+    <h1>Ticket Reservation System</h1>
+
+    <section id="events">
+      <h2>Available events</h2>
+      <div class="event-grid" id="event-grid" aria-live="polite"></div>
+    </section>
+
+    <section id="reserve">
+      <h2>Book a seat</h2>
+      <div class="two-columns">
+        <div class="card">
+          <div class="card-heading">
+            <h3 id="seat-event-title">Choose an event</h3>
+            <span id="seat-availability">Loading</span>
+          </div>
+          <p id="stage-label" class="seat-front">STAGE</p>
+          <div class="seat-grid" id="seat-grid" aria-label="Seat availability"></div>
+          <div class="seat-legend">
+            <span><i class="legend-seat available"></i> Available</span>
+            <span><i class="legend-seat next"></i> Next</span>
+            <span><i class="legend-seat taken"></i> Taken</span>
+          </div>
+          <p class="hint">Seats are assigned automatically. Change the strategy to see which seat is next.</p>
+        </div>
+
+        <div class="right-column">
+          <div class="card">
+            <h3>Reservation details</h3>
+            <label for="customer-id">Customer ID</label>
+            <input id="customer-id" type="text" maxlength="32" value="GUEST-01" autocomplete="off">
+            <div class="detail-row"><span>Event</span><strong id="selected-experience">—</strong></div>
+            <div class="detail-row"><span>Next seat</span><strong id="next-seat">—</strong></div>
+            <div class="detail-row"><span>Price</span><strong id="selected-price">—</strong></div>
+            <button class="primary-button full-width" id="book-button" type="button">Reserve seat</button>
+          </div>
+
+          <div class="card">
+            <h3>Demo settings</h3>
+            <p class="hint">Try both seat selection strategies or change the ticket price.</p>
+            <p class="field-label">Seat selection</p>
+            <div class="strategy-buttons" id="strategy-control">
+              <button data-policy="front" type="button">Front first</button>
+              <button data-policy="back" type="button">Back first</button>
+            </div>
+            <label for="price-input">New price ($)</label>
+            <div class="price-control">
+              <input id="price-input" type="number" min="0" step="0.01" placeholder="Enter price">
+              <button id="price-button" type="button">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="two-columns bottom-sections" id="bookings">
+      <div class="card">
+        <div class="card-heading"><h2>My bookings</h2><span id="booking-count">0 bookings</span></div>
+        <p class="hint">Bookings for the customer ID above.</p>
+        <div id="booking-list" class="item-list"></div>
+      </div>
+      <div class="card" id="activity">
+        <h2>Recent updates</h2>
+        <p class="hint">Observer notifications appear here when seats or prices change.</p>
+        <div id="activity-list" class="item-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Software Design Patterns · Ticket Reservation System</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
