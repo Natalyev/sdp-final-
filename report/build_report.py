@@ -197,13 +197,14 @@ story = [Spacer(1, 78), para("Ticket Reservation<br/>System", title), Spacer(1, 
          Spacer(1, 20), para("Repository", h2),
          para("<link href='https://github.com/Natalyev/sdp-final-' color='#0A8B86'>github.com/Natalyev/sdp-final-</link>"),
          Spacer(1, 20), para("Deliverables", h2),
-         para("Source code, editable UML, JUnit tests, terminal run evidence, and this report."),
+         para("Source code, responsive browser interface, editable UML, JUnit tests, and this report."),
          PageBreak()]
 
 story += [section(1, "Abstract"),
           para("Ticket Reservation System is an in-memory Java application for concert and flight bookings. "
                "Users register events, book numbered seats, confirm or cancel reservations, change prices, "
-               "and switch seating policies. Views receive seat and price notifications. The application "
+               "and switch seating policies. A responsive browser interface shows the seat map, bookings, "
+               "and live notifications. The application "
                "integrates Factory Method, Strategy, Observer, Builder, State, and Facade in one workflow."),
           section(2, "Requirements and scenario"),
           para("Each event has its own ticket category, price, seating policy, and available seats. Booking "
@@ -214,7 +215,7 @@ story += [section(1, "Abstract"),
                "is confirmed. The policy switches to back-row, so the next booking takes seat 3. "
                "Cancellation returns seat 3. A separate flight event then creates a flight ticket."),
           section(3, "Architecture"),
-          para("The Facade owns one service and inventory per event. Builder validates registration data. "
+          para("The browser and console both use the Facade. The Facade owns one service and inventory per event. Builder validates registration data. "
                "The service uses Strategy to select a seat and Factory Method to create its ticket. "
                "A reservation session delegates transitions to State objects. Observer distributes seat "
                "and price changes to subscribed views."), Spacer(1, 10), Architecture(), Spacer(1, 8),
@@ -251,14 +252,17 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
           bullet("If ticket creation fails, the selected seat is returned before the error is propagated."),
           bullet("Synchronous Observer delivery and CopyOnWriteArrayList allow subscription changes during notification."),
           section(8, "Verification"),
-          para("<b>19 tests passed · 0 failures · 0 errors.</b> Ten tests cover the initial patterns and service "
+          para("<b>20 tests passed · 0 failures · 0 errors.</b> Ten tests cover the initial patterns and service "
                "integration. Eight workflow tests cover all-pattern integration, Builder validation, "
                "state transitions, seat reuse, independent events, interactive commands, rollback, and "
-               "per-event availability counts. One Facade test covers customer reservation lookup."),
+               "per-event availability counts. One Facade test covers customer reservation lookup. One HTTP "
+               "test exercises the browser workflow through the same Facade."),
           para("Actual terminal run evidence is provided in the three text files under <font name='Courier'>evidence/</font>."),
-          Preformatted("Tests run: 19, Failures: 0, Errors: 0, Skipped: 0\nBUILD SUCCESS", code_style),
+          Preformatted("Tests run: 20, Failures: 0, Errors: 0, Skipped: 0\nBUILD SUCCESS", code_style),
           section(9, "How to run"),
-          Preformatted("mvn clean test\nmvn exec:java\nmvn package\njava -cp target/classes tickets.Main --interactive", code_style),
+          Preformatted("mvn clean test\nmvn exec:java\nmvn package\njava -cp target/classes tickets.Main --web\njava -cp target/classes tickets.Main --interactive", code_style),
+          para("Web mode serves the browser interface at <font name='Courier'>http://127.0.0.1:8080</font> "
+               "on the local computer. It starts with 30 concert seats and 18 flight seats."),
           para("Interactive commands: <font name='Courier'>help</font>, <font name='Courier'>events</font>, "
                "<font name='Courier'>book EVENT CUSTOMER</font>, <font name='Courier'>confirm ID</font>, "
                "<font name='Courier'>cancel ID</font>, <font name='Courier'>show ID</font>, "
@@ -266,9 +270,8 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
                "<font name='Courier'>strategy EVENT front|back</font>, and <font name='Courier'>quit</font>."),
           section(10, "Limitations and extensions"),
           para("The application is in-memory: data is lost when it exits. It does not process payments, "
-               "authenticate accounts, display a visual seat map, or book multiple seats in one order. "
-               "A database and graphical interface are natural future extensions; neither is needed "
-               "to demonstrate the integrated patterns."),
+               "authenticate accounts, allow manual selection of a specific seat, or book multiple seats "
+               "in one order. A database and payment flow are natural future extensions."),
           section(11, "Execution evidence"),
           para("The following excerpts come from actual runs of the current code. Full transcripts are "
                "included in the <font name='Courier'>evidence/</font> folder."),
@@ -289,10 +292,11 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
           section(12, "Conclusion"),
           para("The prototype demonstrates the requested Ticket Reservation System topic. Six patterns "
                "cooperate in event setup, seat selection, ticket creation, reservation transitions, and "
-               "notifications. The Maven build succeeds and all 19 tests pass."),
+               "notifications. The responsive browser interface makes their effects visible during the defense. "
+               "The Maven build succeeds and all 20 tests pass."),
           section(13, "Further work"),
-          para("Persistent storage, payment processing, multi-seat orders, authentication, and a graphical "
-               "seat map would extend the prototype for broader use."),
+          para("Persistent storage, payment processing, multi-seat orders, authentication, and manual "
+               "seat selection would extend the prototype for broader use."),
           section(14, "Team and repository"),
           para("The repository records work under the GitHub handles Natalyev, eslishnah, and MangoDeath. "
                "Its commit history is the source for exact file-level attribution. Full names can be "

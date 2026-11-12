@@ -6,9 +6,10 @@ Our project is a ticket reservation system for concerts and flights. We use six 
 
 ## Live demonstration
 
-1. Run `tickets.Main`. Point out the first concert booking in `PENDING`, its confirmation, the switch from front-row to back-row, cancellation, and the flight ticket.
-2. Run `tickets.Main --interactive`. Enter `events`, `book CONCERT-1 C1`, `confirm R-1`, `cancel R-1`, `events`, `quit`.
-3. Run `mvn clean test`. Show `Tests run: 19, Failures: 0, Errors: 0`.
+1. Run `java -cp target/classes tickets.Main --web`, then open `http://127.0.0.1:8080`. Choose the concert, reserve the highlighted front-row seat, and confirm it in My bookings.
+2. Switch to Back row first and reserve another seat. Show that the highlighted next seat jumps to the highest available number. Cancel the second booking and show the seat returning to the map and a notification appearing in Live updates.
+3. Change the price, choose the flight, and point out its independent seat map and ticket factory. The browser calls the same `TicketReservationSystem` Facade as the console version.
+4. Run `mvn clean test`. Show `Tests run: 20, Failures: 0, Errors: 0`.
 
 ## Files to show
 
@@ -21,7 +22,8 @@ Our project is a ticket reservation system for concerts and flights. We use six 
 | 5 | `src/main/java/tickets/factory/TicketFactory.java` and implementations | Factory creates the right concrete ticket type. |
 | 6 | `src/main/java/tickets/state/ReservationState.java` | State classes decide which transitions are allowed. |
 | 7 | `src/main/java/tickets/observer/TicketEventPublisher.java` | Observer dispatches events to subscribed listeners. |
-| 8 | `src/test/java/tickets/TicketWorkflowTest.java` | Integration tests prove the patterns work together. |
+| 8 | `src/main/java/tickets/web/WebApp.java` and `src/main/resources/web` | The browser sends actions to the same Facade; the page renders seats, bookings, prices, and live events. |
+| 9 | `src/test/java/tickets/TicketWorkflowTest.java` and `TicketWebTest.java` | Integration tests prove the patterns work together through console and browser paths. |
 
 ## Likely questions
 
@@ -35,4 +37,4 @@ Our project is a ticket reservation system for concerts and flights. We use six 
 
 **What does Facade add?** It hides the coordination among service, inventory, state, factory, and publisher from the caller.
 
-**What are the limitations?** The system is in-memory and has no payment or login. Those are future extensions.
+**What are the limitations?** The system is in-memory and has no payment or login. Those are future extensions. The seat map shows the next seat chosen by Strategy; customers do not manually pick a specific seat.

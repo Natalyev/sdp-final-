@@ -7,7 +7,7 @@
 
 ## 1. Abstract
 
-Ticket Reservation System is an in-memory Java application for concert and flight bookings. A user registers an event, books a numbered seat, confirms or cancels the reservation, changes the ticket price, and switches the seat-selection policy. Customer and availability views receive notifications when prices or seat counts change. A runnable demo and an interactive command-line mode show the full workflow. The implementation integrates six design patterns: Factory Method, Strategy, Observer, Builder, State, and Facade.
+Ticket Reservation System is an in-memory Java application for concert and flight bookings. A user registers an event, books a numbered seat, confirms or cancels the reservation, changes the ticket price, and switches the seat-selection policy. Customer and availability views receive notifications when prices or seat counts change. A responsive browser interface, a runnable console demo, and an interactive command-line mode show the full workflow. The implementation integrates six design patterns: Factory Method, Strategy, Observer, Builder, State, and Facade.
 
 This introductory section defines the problem: booking logic must choose seats, create different tickets, control reservation changes, and notify customers without placing every responsibility in one class.
 
@@ -21,7 +21,7 @@ Example: register `CONCERT-1` with seats 1, 2, 3 and a front-row policy. A custo
 
 `TicketReservationSystem` is the facade used by clients. For each registered event, it owns one `ReservationService` and one `SeatInventory`. `EventConfiguration.Builder` creates a valid configuration before registration. `ReservationService` asks `SeatInventory` to choose a seat and uses a `TicketFactory` to create a concrete ticket. It publishes seat and price events through `TicketEventPublisher`. The facade stores a `ReservationSession` for each booking. The session delegates transitions to State objects and returns immutable `Reservation` snapshots.
 
-The editable UML diagram is `docs/class-diagram.puml`. The `Main` class demonstrates the default scenario. `ConsoleApp` provides the interactive terminal interface.
+The editable UML diagram is `docs/class-diagram.puml`. The `Main` class demonstrates the default scenario. `ConsoleApp` provides the interactive terminal interface. `WebApp` serves a local browser interface and passes browser actions to the same Facade. The browser shows available and occupied seats, customer bookings, price changes, and recent Observer events.
 
 ## 4. Pattern implementation and integration
 
@@ -63,9 +63,9 @@ system.confirm(booking.id());
 
 ## 6. Verification and evidence
 
-Run `mvn clean test`: **19 tests pass, 0 failures, 0 errors**. Ten tests check factories, seat strategies, Observer subscriptions, and basic service integration. Eight workflow tests check Builder validation, all-pattern integration, cancellation and seat reuse, independent event inventories, invalid IDs, interactive commands, ticket-creation rollback, and per-event availability counts. One Facade test checks customer reservation lookup.
+Run `mvn clean test`: **20 tests pass, 0 failures, 0 errors**. Ten tests check factories, seat strategies, Observer subscriptions, and basic service integration. Eight workflow tests check Builder validation, all-pattern integration, cancellation and seat reuse, independent event inventories, invalid IDs, interactive commands, ticket-creation rollback, and per-event availability counts. One Facade test checks customer reservation lookup. One HTTP integration test checks the browser workflow through booking, confirmation, policy change, cancellation, and price change.
 
-Run `tickets.Main` to see the deterministic demo. Run `tickets.Main --interactive` to enter commands. Verified terminal transcripts are included in `evidence/test-run.txt`, `evidence/demo-run.txt`, and `evidence/interactive-run.txt`.
+Run `tickets.Main` to see the deterministic demo. Run `tickets.Main --interactive` to enter commands. Run `tickets.Main --web` and open `http://127.0.0.1:8080` for the browser interface. Verified terminal transcripts are included in `evidence/test-run.txt`, `evidence/demo-run.txt`, and `evidence/interactive-run.txt`.
 
 ## 7. Running the project
 
@@ -76,13 +76,14 @@ mvn clean test
 mvn exec:java
 mvn package
 java -cp target/classes tickets.Main --interactive
+java -cp target/classes tickets.Main --web
 ```
 
-Interactive commands: `help`, `events`, `book EVENT CUSTOMER`, `confirm ID`, `cancel ID`, `show ID`, `price EVENT AMOUNT`, `strategy EVENT front|back`, and `quit`.
+Open `http://127.0.0.1:8080` after starting web mode. The local browser interface starts with 30 concert seats and 18 flight seats. Interactive terminal commands: `help`, `events`, `book EVENT CUSTOMER`, `confirm ID`, `cancel ID`, `show ID`, `price EVENT AMOUNT`, `strategy EVENT front|back`, and `quit`.
 
 ## 8. Limitations and future work
 
-Data is held in memory and is lost when the process ends. The project has no payment processing, account authentication, database, seat map, or multi-seat orders. These are possible extensions, but they are not required to demonstrate the six integrated patterns. The command-line interface is sufficient for the current workflow and defense.
+Data is held in memory and is lost when the process ends. The project has no payment processing, account authentication, database, or multi-seat orders. The browser shows a seat map but does not allow manual choice of a specific seat; the current Strategy selects the next seat. These are possible extensions, but they are not required to demonstrate the six integrated patterns.
 
 ## 9. Execution evidence
 
@@ -94,8 +95,8 @@ The repository records contributions under the GitHub handles **Natalyev**, **es
 
 ## 11. Conclusion
 
-The working prototype demonstrates the requested Ticket Reservation System topic. Six patterns participate in the same booking workflow: event setup, seat selection, ticket creation, reservation state changes, and notifications. The Maven build succeeds and all 19 tests pass.
+The working prototype demonstrates the requested Ticket Reservation System topic. Six patterns participate in the same booking workflow: event setup, seat selection, ticket creation, reservation state changes, and notifications. The responsive browser interface makes the workflow visible during the defense. The Maven build succeeds and all 20 tests pass.
 
 ## 12. Further work
 
-Persistent storage, payment processing, multi-seat orders, authentication, and a graphical seat map would make the prototype suitable for broader use. These additions would build on the existing Facade and event-specific services.
+Persistent storage, payment processing, multi-seat orders, authentication, and manual seat selection would make the prototype suitable for broader use. These additions would build on the existing Facade and event-specific services.
