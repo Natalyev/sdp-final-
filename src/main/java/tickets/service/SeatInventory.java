@@ -29,6 +29,8 @@ public final class SeatInventory {
     }
 
     public synchronized int remaining() { return availableSeats.size(); }
+    public synchronized Set<Integer> allSeats() { return allSeats; }
+    public synchronized Set<Integer> availableSeats() { return Set.copyOf(availableSeats); }
 
     public synchronized void releaseSeat(int seat) {
         if (!allSeats.contains(seat) || !availableSeats.add(seat))

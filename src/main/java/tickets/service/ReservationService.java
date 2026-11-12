@@ -40,6 +40,8 @@ public final class ReservationService {
         events.publish(new TicketEvent(TicketEvent.Type.PRICE_CHANGED, eventId, inventory.remaining(), price));
     }
 
+    public synchronized BigDecimal currentPrice() { return price; }
+
     public synchronized void release(Ticket ticket) {
         Objects.requireNonNull(ticket);
         inventory.releaseSeat(ticket.seat());

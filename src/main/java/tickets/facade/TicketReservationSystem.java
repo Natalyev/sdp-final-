@@ -73,6 +73,9 @@ public final class TicketReservationSystem {
     }
 
     public synchronized int remaining(String eventId) { return context(eventId).inventory().remaining(); }
+    public synchronized Set<Integer> allSeats(String eventId) { return context(eventId).inventory().allSeats(); }
+    public synchronized Set<Integer> availableSeats(String eventId) { return context(eventId).inventory().availableSeats(); }
+    public synchronized BigDecimal currentPrice(String eventId) { return context(eventId).service().currentPrice(); }
     public synchronized Set<String> eventIds() { return Set.copyOf(eventContexts.keySet()); }
     public synchronized void changePrice(String eventId, BigDecimal price) { context(eventId).service().changePrice(eventId, price); }
     public synchronized void setStrategy(String eventId, SeatSelectionStrategy strategy) { context(eventId).inventory().setStrategy(strategy); }
