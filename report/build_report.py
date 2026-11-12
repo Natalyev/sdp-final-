@@ -8,9 +8,10 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import (
     BaseDocTemplate, Flowable, Frame, KeepTogether, PageBreak, PageTemplate,
-    Paragraph, Preformatted, Spacer, Table, TableStyle,
+    Image, Paragraph, Preformatted, Spacer, Table, TableStyle,
 )
 
 
@@ -54,6 +55,14 @@ def bullet(text):
 
 def section(number, heading):
     return para(f"{number}. {heading}", h1)
+
+
+def screenshot(filename, width):
+    path = ROOT / "report" / "screenshots" / filename
+    pixel_width, pixel_height = ImageReader(str(path)).getSize()
+    image = Image(str(path), width=width, height=width * pixel_height / pixel_width)
+    image.hAlign = "CENTER"
+    return image
 
 
 def table(headers, rows, widths):
@@ -303,6 +312,19 @@ story += [table(("Pattern", "Participants", "Purpose"), pattern_rows, (92, 180, 
                "provided in the course submission form if required."),
           para("Repository: <link href='https://github.com/Natalyev/sdp-final-' color='#0A8B86'>"
                "https://github.com/Natalyev/sdp-final-</link>.")]
+
+story += [PageBreak(), section(15, "Browser screenshots"),
+          para("These screenshots were captured from the running local browser interface. They show "
+               "the booking workflow and the visible results of Strategy and Observer."),
+          screenshot("events.png", 470),
+          para("Figure 1. The concert and flight events, their prices, and available seat counts.", small),
+          Spacer(1, 18), screenshot("booking-and-updates.png", 470),
+          para("Figure 2. A pending reservation and the Observer availability notification after booking.", small),
+          PageBreak(), para("Seat selection strategy", h2),
+          para("After seat 1 was booked, switching to the back-first policy highlights seat 30 as "
+               "the next seat. The selected seat is assigned automatically when a booking is made."),
+          screenshot("seat-strategy.png", 410),
+          para("Figure 3. Seat 30 is next under the back-first strategy; seat 1 is already taken.", small)]
 
 ReportDoc(OUTPUT).build(story)
 print(OUTPUT)

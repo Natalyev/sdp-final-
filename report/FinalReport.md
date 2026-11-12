@@ -100,3 +100,19 @@ The working prototype demonstrates the requested Ticket Reservation System topic
 ## 12. Further work
 
 Persistent storage, payment processing, multi-seat orders, authentication, and manual seat selection would make the prototype suitable for broader use. These additions would build on the existing Facade and event-specific services.
+
+## 13. Browser screenshots
+
+The screenshots below come from the running local browser interface.
+
+![Concert and flight event cards](screenshots/events.png)
+
+*Figure 1. Concert and flight events with prices and available seat counts.*
+
+![Pending booking and Observer update](screenshots/booking-and-updates.png)
+
+*Figure 2. A pending reservation and the availability notification after booking.*
+
+![Seat map after switching strategy](screenshots/seat-strategy.png)
+
+*Figure 3. Seat 30 is next under the back-first strategy; seat 1 is already taken.*
