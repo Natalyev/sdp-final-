@@ -34,7 +34,7 @@ public final class Main {
                 .price(new BigDecimal("50.00")).build());
         system.register(new EventConfiguration.Builder("FLIGHT-1")
                 .factory(new FlightTicketFactory()).strategy(new BackRowStrategy())
-                .seats(webMode ? IntStream.rangeClosed(10, 27).boxed().collect(Collectors.toSet())
+                .seats(webMode ? IntStream.rangeClosed(1, 18).boxed().collect(Collectors.toSet())
                         : Set.of(10, 11))
                 .price(new BigDecimal("200.00")).build());
 
