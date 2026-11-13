@@ -65,9 +65,6 @@ Reservation confirmed = system.confirm(pending.id());
 - `src/main/java/tickets/factory`, `strategy`, `observer`, `service`, `model`: core behavior.
 - `src/test/java/tickets`: unit and integration tests.
 - `docs/class-diagram.puml`: editable UML diagram.
-- `report/FinalReport.md`: editable report source.
-- `../TicketReservationSystem_FinalReport.pdf`: standalone PDF report for separate submission.
-- `docs/defense-notes.md`: short defense guide.
 
 ## Verification
 
